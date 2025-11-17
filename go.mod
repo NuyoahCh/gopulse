@@ -1,8 +1,6 @@
-module eino-tutorial
+module easy-eino
 
-go 1.24.0
-
-toolchain go1.24.10
+go 1.24.10
 
 require (
 	github.com/cloudwego/eino v0.5.14
@@ -10,6 +8,7 @@ require (
 	github.com/cloudwego/eino-ext/components/model/ark v0.1.42
 	github.com/cloudwego/eino-ext/components/model/deepseek v0.0.0-20251111090228-91a10bbc864f
 	github.com/cloudwego/eino-ext/components/model/ollama v0.1.5
+	github.com/google/uuid v1.6.0
 )
 
 require (
@@ -27,7 +26,6 @@ require (
 	github.com/getkin/kin-openapi v0.118.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.5 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/goph/emperror v0.17.2 // indirect
 	github.com/invopop/yaml v0.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
