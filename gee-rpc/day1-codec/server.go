@@ -1,4 +1,4 @@
-package easyrpc
+package geerpc
 
 import (
 	"encoding/json"
