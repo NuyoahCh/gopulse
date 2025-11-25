@@ -1,9 +1,8 @@
-// Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Copyright...
+// Package singleflight provides a duplicate function call suppression mechanism.
+// singleflight 提供了一种机制：对同一 key 的函数调用，只允许一次执行，
+// 其他重复调用将等待第一次执行完成并共享结果。
 
-// Package singleflight provides a duplicate function call suppression
-// mechanism.
 package singleflight // import "golang.org/x/sync/singleflight"
 
 import (
@@ -15,193 +14,196 @@ import (
 	"sync"
 )
 
-// errGoexit indicates the runtime.Goexit was called in
-// the user given function.
+// errGoexit 表示用户提供的函数调用了 runtime.Goexit。
+// Goexit 结束当前 goroutine，但不能被 recover 捕获。
 var errGoexit = errors.New("runtime.Goexit was called")
 
-// A panicError is an arbitrary value recovered from a panic
-// with the stack trace during the execution of given function.
+// panicError 用于保存 panic 的值与堆栈信息
 type panicError struct {
-	value interface{}
-	stack []byte
+	value interface{} // panic 的原始值
+	stack []byte      // 堆栈信息
 }
 
-// Error implements error interface.
+// 实现 error 接口，打印 panic 信息和堆栈
 func (p *panicError) Error() string {
 	return fmt.Sprintf("%v\n\n%s", p.value, p.stack)
 }
 
+// newPanicError 构造 panicError，并截掉 goroutine 标题行（因为可能已失效）
 func newPanicError(v interface{}) error {
 	stack := debug.Stack()
 
-	// The first line of the stack trace is of the form "goroutine N [status]:"
-	// but by the time the panic reaches Do the goroutine may no longer exist
-	// and its status will have changed. Trim out the misleading line.
+	// 堆栈第一行通常是 "goroutine N [xxx]:"，此时 goroutine 可能已结束，这行会误导，
+	// 因此将其删除。
 	if line := bytes.IndexByte(stack[:], '\n'); line >= 0 {
 		stack = stack[line+1:]
 	}
 	return &panicError{value: v, stack: stack}
 }
 
-// call is an in-flight or completed singleflight.Do call
+// call 表示一次唯一的 Do 调用（正在执行或已完成）
 type call struct {
-	wg sync.WaitGroup
+	wg sync.WaitGroup // 用于等待 call 执行结束
 
-	// These fields are written once before the WaitGroup is done
-	// and are only read after the WaitGroup is done.
-	val interface{}
-	err error
+	// 这些字段只会在调用结束前写入，在 WaitGroup 完成之后读取
+	val interface{} // fn 返回值
+	err error       // fn 返回错误
 
-	// forgotten indicates whether Forget was called with this call's key
-	// while the call was still in flight.
+	// forgotten 表示在 call 进行过程中是否调用过 Forget(key)
+	// 若为 true，则 call 完成后不会自动从 map 中删除
 	forgotten bool
 
-	// These fields are read and written with the singleflight
-	// mutex held before the WaitGroup is done, and are read but
-	// not written after the WaitGroup is done.
-	dups  int
-	chans []chan<- Result
+	// 以下字段在调用过程中会被 mutex 保护写入，完成后只读
+	dups  int             // 同一 key 的重复请求数量
+	chans []chan<- Result // 注册等待结果的 channel 列表（用于 DoChan）
 }
 
-// Group represents a class of work and forms a namespace in
-// which units of work can be executed with duplicate suppression.
+// Group 管理多个 key 对应的执行任务，相当于一个命名空间
 type Group struct {
-	mu sync.Mutex       // protects m
-	m  map[string]*call // lazily initialized
+	mu sync.Mutex       // 保护 m
+	m  map[string]*call // key -> call 的映射表
 }
 
-// Result holds the results of Do, so they can be passed
-// on a channel.
+// Result 保存 Do() 和 DoChan() 执行结果
 type Result struct {
-	Val    interface{}
-	Err    error
-	Shared bool
+	Val    interface{} // 返回值
+	Err    error       // 错误
+	Shared bool        // 是否共享（是否为重复调用返回）
 }
 
-// Do executes and returns the results of the given function, making
-// sure that only one execution is in-flight for a given key at a
-// time. If a duplicate comes in, the duplicate caller waits for the
-// original to complete and receives the same results.
-// The return value shared indicates whether v was given to multiple callers.
+// Do：执行给定 key 的函数 fn。
+// 若同 key 正在执行，则重复请求等待并共享结果。
 func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, err error, shared bool) {
 	g.mu.Lock()
 	if g.m == nil {
 		g.m = make(map[string]*call)
 	}
+
+	// 若 key 已经存在说明正在执行：增加 dups 后等待
 	if c, ok := g.m[key]; ok {
 		c.dups++
+		// 解锁，不阻塞其他 key
 		g.mu.Unlock()
+
+		// 等待原执行完成
 		c.wg.Wait()
 
+		// 若原调用抛 panic，则同样抛 panic
 		if e, ok := c.err.(*panicError); ok {
 			panic(e)
 		} else if c.err == errGoexit {
+			// 如果原调用调用了 runtime.Goexit，则也 Goexit
 			runtime.Goexit()
 		}
 		return c.val, c.err, true
 	}
-	c := new(call)
-	c.wg.Add(1)
-	g.m[key] = c
-	g.mu.Unlock()
 
+	// key 不存在：创建新的 call 作为首次执行
+	c := new(call)
+	c.wg.Add(1)   // 标记 call 进行中
+	g.m[key] = c  // 注册到 map 中
+	g.mu.Unlock() // 解锁
+
+	// 执行 fn
 	g.doCall(c, key, fn)
+
 	return c.val, c.err, c.dups > 0
 }
 
-// DoChan is like Do but returns a channel that will receive the
-// results when they are ready.
-//
-// The returned channel will not be closed.
+// DoChan：与 Do 类似，但是返回一个异步 channel，执行结果写入 channel
 func (g *Group) DoChan(key string, fn func() (interface{}, error)) <-chan Result {
-	ch := make(chan Result, 1)
+	ch := make(chan Result, 1) // 结果只会写一次，缓冲避免死锁
+
 	g.mu.Lock()
 	if g.m == nil {
 		g.m = make(map[string]*call)
 	}
+
+	// 若 key 已存在，说明正在执行：注册当前 channel 等候结果
 	if c, ok := g.m[key]; ok {
 		c.dups++
 		c.chans = append(c.chans, ch)
 		g.mu.Unlock()
 		return ch
 	}
+
+	// 新建 call
 	c := &call{chans: []chan<- Result{ch}}
 	c.wg.Add(1)
 	g.m[key] = c
 	g.mu.Unlock()
 
+	// 异步执行
 	go g.doCall(c, key, fn)
 
 	return ch
 }
 
-// doCall handles the single call for a key.
+// doCall：真正执行 fn 的逻辑，并处理 panic、Goexit、正常返回等情况
 func (g *Group) doCall(c *call, key string, fn func() (interface{}, error)) {
-	normalReturn := false
-	recovered := false
+	normalReturn := false // 标记是否正常返回
+	recovered := false    // 标记是否从 panic 中恢复
 
-	// use double-defer to distinguish panic from runtime.Goexit,
-	// more details see https://golang.org/cl/134395
+	// 双层 defer 用于区分 panic 和 Goexit
 	defer func() {
-		// the given function invoked runtime.Goexit
+		// 若既不是正常返回也不是 panic，则说明是 Goexit
 		if !normalReturn && !recovered {
 			c.err = errGoexit
 		}
 
-		c.wg.Done()
+		c.wg.Done() // 任务结束，唤醒等待者
+
 		g.mu.Lock()
 		defer g.mu.Unlock()
+
+		// 若未调用 Forget(key)，则从 map 中删除该 key
 		if !c.forgotten {
 			delete(g.m, key)
 		}
 
+		// 如果是 panicError，需要确保所有等待者不会永远阻塞
 		if e, ok := c.err.(*panicError); ok {
-			// In order to prevent the waiting channels from being blocked forever,
-			// needs to ensure that this panic cannot be recovered.
 			if len(c.chans) > 0 {
+				// 为了让所有等待者醒来，让 panic 发生在一个新 goroutine 中
 				go panic(e)
-				select {} // Keep this goroutine around so that it will appear in the crash dump.
+				select {} // 保持 goroutine 存活，便于 crash dump 查看
 			} else {
 				panic(e)
 			}
 		} else if c.err == errGoexit {
-			// Already in the process of goexit, no need to call again
+			// Goexit 已处理，无需再次调用
 		} else {
-			// Normal return
+			// 正常返回，将结果写入所有等待 channel
 			for _, ch := range c.chans {
 				ch <- Result{c.val, c.err, c.dups > 0}
 			}
 		}
 	}()
 
+	// 内层 defer，用于捕获 panic，并转为 panicError
 	func() {
 		defer func() {
+			// 若不是正常返回，则可能发生了 panic
 			if !normalReturn {
-				// Ideally, we would wait to take a stack trace until we've determined
-				// whether this is a panic or a runtime.Goexit.
-				//
-				// Unfortunately, the only way we can distinguish the two is to see
-				// whether the recover stopped the goroutine from terminating, and by
-				// the time we know that, the part of the stack trace relevant to the
-				// panic has been discarded.
 				if r := recover(); r != nil {
 					c.err = newPanicError(r)
 				}
 			}
 		}()
 
+		// 执行用户函数
 		c.val, c.err = fn()
 		normalReturn = true
 	}()
 
+	// 若不是正常返回但 recover 成功，则标记 recovered
 	if !normalReturn {
 		recovered = true
 	}
 }
 
-// Forget tells the singleflight to forget about a key.  Future calls
-// to Do for this key will call the function rather than waiting for
-// an earlier call to complete.
+// Forget：强制从 map 中删除 key，
+// 未来对于该 key 的调用不会等待之前的结果。
 func (g *Group) Forget(key string) {
 	g.mu.Lock()
 	if c, ok := g.m[key]; ok {
