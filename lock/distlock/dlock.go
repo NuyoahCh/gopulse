@@ -1,4 +1,4 @@
-package distlock
+package dlock
 
 import (
 	"context"
