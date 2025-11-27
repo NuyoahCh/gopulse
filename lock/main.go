@@ -12,8 +12,9 @@ import (
 
 func main() {
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
-		DB:   0,
+		Addr:     "127.0.0.1:6379",
+		Password: "123456",
+		DB:       0,
 	})
 
 	client := dlock.NewClient(rdb)
