@@ -3,7 +3,9 @@
 // singleflight 提供了一种机制：对同一 key 的函数调用，只允许一次执行，
 // 其他重复调用将等待第一次执行完成并共享结果。
 
-package singleflight // import "golang.org/x/sync/singleflight"
+package singleflight
+
+// import "golang.org/x/sync/singleflight"
 
 import (
 	"bytes"
@@ -71,8 +73,7 @@ type Result struct {
 	Shared bool        // 是否共享（是否为重复调用返回）
 }
 
-// Do：执行给定 key 的函数 fn。
-// 若同 key 正在执行，则重复请求等待并共享结果。
+// Do 执行给定 key 的函数 fn。若同 key 正在执行，则重复请求等待并共享结果。
 func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, err error, shared bool) {
 	g.mu.Lock()
 	if g.m == nil {
@@ -110,7 +111,7 @@ func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, e
 	return c.val, c.err, c.dups > 0
 }
 
-// DoChan：与 Do 类似，但是返回一个异步 channel，执行结果写入 channel
+// DoChan 与 Do 类似，但是返回一个异步 channel，执行结果写入 channel
 func (g *Group) DoChan(key string, fn func() (interface{}, error)) <-chan Result {
 	ch := make(chan Result, 1) // 结果只会写一次，缓冲避免死锁
 
@@ -139,7 +140,7 @@ func (g *Group) DoChan(key string, fn func() (interface{}, error)) <-chan Result
 	return ch
 }
 
-// doCall：真正执行 fn 的逻辑，并处理 panic、Goexit、正常返回等情况
+// doCall 真正执行 fn 的逻辑，并处理 panic、Goexit、正常返回等情况
 func (g *Group) doCall(c *call, key string, fn func() (interface{}, error)) {
 	normalReturn := false // 标记是否正常返回
 	recovered := false    // 标记是否从 panic 中恢复
@@ -202,8 +203,7 @@ func (g *Group) doCall(c *call, key string, fn func() (interface{}, error)) {
 	}
 }
 
-// Forget：强制从 map 中删除 key，
-// 未来对于该 key 的调用不会等待之前的结果。
+// Forget 强制从 map 中删除 key， 未来对于该 key 的调用不会等待之前的结果。
 func (g *Group) Forget(key string) {
 	g.mu.Lock()
 	if c, ok := g.m[key]; ok {
