@@ -11,7 +11,7 @@ type TaskID string
 // TaskStatus 任务状态（DDD 里的值对象）
 type TaskStatus string
 
-// 执行状态
+// 执行状态参数
 const (
 	StatusPending   TaskStatus = "PENDING"   // 已创建，等待调度
 	StatusRunning   TaskStatus = "RUNNING"   // 执行中
