@@ -1,4 +1,4 @@
-package gmp
+package main
 
 import (
 	"fmt"
@@ -253,4 +253,64 @@ func (s *Scheduler) worker(mID int, p *P, gWg *sync.WaitGroup, stop <-chan struc
 			s.runG(mID, p, g, gWg)
 		}
 	}
+}
+
+// ---- main：示例入口 ----
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+
+	const (
+		numP        = 2 // Processor 数量（类似 GOMAXPROCS）
+		numM        = 2 // Machine 数量（这里简单做成和 P 相同）
+		numG        = 6 // G 的数量
+		timeSlice   = 3 // 每次调度最多执行几个“步骤”，模拟时间片
+		blockMillis = 600
+	)
+
+	s := NewScheduler(numP, timeSlice)
+
+	var gWg sync.WaitGroup
+	gWg.Add(numG)
+
+	// 构造一些 G：有的纯 CPU，有的中途会“阻塞”
+	var allG []*G
+	allG = append(allG,
+		&G{id: 1, name: "cpu-bound-1", totalSteps: 10},
+		&G{id: 2, name: "cpu-bound-2", totalSteps: 8},
+		&G{id: 3, name: "syscall-1", totalSteps: 12, blockAtStep: 4, blockDuration: blockMillis * time.Millisecond},
+		&G{id: 4, name: "syscall-2", totalSteps: 9, blockAtStep: 3, blockDuration: blockMillis * time.Millisecond},
+		&G{id: 5, name: "mixed-1", totalSteps: 7, blockAtStep: 2, blockDuration: 400 * time.Millisecond},
+		&G{id: 6, name: "mixed-2", totalSteps: 11, blockAtStep: 5, blockDuration: 500 * time.Millisecond},
+	)
+
+	// 把调度器指针塞回每个 G，方便 G 在阻塞完成后自己重新入队
+	for _, g := range allG {
+		g.sched = s
+		g.state = GRunnable
+		s.Submit(g)
+	}
+
+	// stop 用来告诉所有 M：所有 G 完成后可以退出了
+	stop := make(chan struct{})
+
+	// 等所有 G 完成后关闭 stop
+	go func() {
+		gWg.Wait()
+		close(stop)
+	}()
+
+	var mWg sync.WaitGroup
+	for i := 0; i < numM; i++ {
+		mWg.Add(1)
+		p := s.ps[i%numP]
+		go func(id int, p *P) {
+			defer mWg.Done()
+			fmt.Printf("M%d 启动，绑定到 P%d\n", id, p.id)
+			s.worker(id, p, &gWg, stop)
+		}(i+1, p)
+	}
+
+	mWg.Wait()
+	fmt.Println("所有 G 都执行完毕，调度器退出。")
 }
