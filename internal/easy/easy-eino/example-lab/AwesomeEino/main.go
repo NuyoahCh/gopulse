@@ -168,5 +168,4 @@ func main() {
 
 	fmt.Println("Stored document IDs:", ids)
 
-
 }

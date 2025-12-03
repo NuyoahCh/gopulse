@@ -14,7 +14,7 @@ func InitClient() {
 	ctx := context.Background()
 	client, err := cli.NewClient(ctx, cli.Config{
 		Address: "localhost:19530",
-		DBName: "AwesomeEino",
+		DBName:  "AwesomeEino",
 	})
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
