@@ -1,6 +1,0 @@
-.env
-
-# ignore runtime data
-volumes/
-
-
