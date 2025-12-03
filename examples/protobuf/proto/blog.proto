@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package blog;
+
+option go_package = "gopulse/examples/protobuf/gen/blog;blog";
+
+message User {
+  int32 uid = 1;
+  string uname = 2;
+  int32 age = 3;
+}
+
+message Article {
+  int32 aid = 1;
+  string title = 2;
+  int32 views = 3;
+}
