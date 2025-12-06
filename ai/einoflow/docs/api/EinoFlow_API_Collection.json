@@ -1,0 +1,517 @@
+{
+  "info": {
+    "name": "EinoFlow API Collection",
+    "description": "EinoFlow AI 平台完整 API 集合",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "einoflow-api-collection",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "健康检查",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "检查服务器健康状态"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "LLM 聊天",
+      "item": [
+        {
+          "name": "获取模型列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/llm/models",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "llm", "models"]
+            },
+            "description": "获取所有可用的 LLM 模型列表"
+          },
+          "response": []
+        },
+        {
+          "name": "LLM 聊天 - 豆包模型",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"doubao-seed-1-6-lite-251015\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"你是一个智能助手\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"你好，请介绍一下自己\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/llm/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "llm", "chat"]
+            },
+            "description": "使用豆包模型进行对话"
+          },
+          "response": []
+        },
+        {
+          "name": "LLM 聊天 - 多轮对话",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"doubao-seed-1-6-lite-251015\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"你是一个专业的 AI 助手\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"什么是人工智能？\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"人工智能是计算机科学的一个分支...\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"请详细解释一下机器学习\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/llm/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "llm", "chat"]
+            },
+            "description": "多轮对话示例"
+          },
+          "response": []
+        },
+        {
+          "name": "LLM 流式聊天",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"doubao-seed-1-6-lite-251015\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"请写一个关于春天的短诗\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/llm/chat/stream",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "llm", "chat", "stream"]
+            },
+            "description": "流式响应，实时返回生成的内容"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RAG 检索增强",
+      "item": [
+        {
+          "name": "索引文档",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documents\": [\n    \"人工智能是计算机科学的一个分支，致力于创建能够执行通常需要人类智能的任务的系统\",\n    \"机器学习是人工智能的一个子集，它使计算机能够从数据中学习而无需明确编程\",\n    \"深度学习是机器学习的一种方法，使用多层神经网络来学习数据的表示\",\n    \"自然语言处理是人工智能的一个领域，专注于计算机与人类语言之间的交互\",\n    \"计算机视觉是人工智能的一个领域，使计算机能够理解和解释视觉信息\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/rag/index",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rag", "index"]
+            },
+            "description": "将文档添加到向量数据库"
+          },
+          "response": []
+        },
+        {
+          "name": "RAG 查询",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"什么是深度学习？\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/rag/query",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rag", "query"]
+            },
+            "description": "基于向量检索回答问题"
+          },
+          "response": []
+        },
+        {
+          "name": "查看文档统计",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/rag/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rag", "stats"]
+            },
+            "description": "查看已索引的文档数量和内容"
+          },
+          "response": []
+        },
+        {
+          "name": "清空文档",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/rag/clear",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rag", "clear"]
+            },
+            "description": "清空所有已索引的文档"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agent 智能体",
+      "item": [
+        {
+          "name": "Agent 执行 - 天气查询",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"北京今天的天气怎么样？\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "run"]
+            },
+            "description": "Agent 自动调用工具查询天气"
+          },
+          "response": []
+        },
+        {
+          "name": "Agent 执行 - 计算器",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"计算 123 + 456 等于多少？\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "run"]
+            },
+            "description": "Agent 使用计算器工具"
+          },
+          "response": []
+        },
+        {
+          "name": "Agent 执行 - 搜索",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"搜索人工智能的最新发展\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "run"]
+            },
+            "description": "Agent 使用搜索工具"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chain 链式编排",
+      "item": [
+        {
+          "name": "Chain 执行 - 顺序链",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sequential\",\n  \"input\": \"人工智能\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/chain/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chain", "run"]
+            },
+            "description": "顺序执行多个步骤"
+          },
+          "response": []
+        },
+        {
+          "name": "Chain 执行 - 并行链",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"parallel\",\n  \"input\": \"机器学习\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/chain/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chain", "run"]
+            },
+            "description": "并行执行多个任务"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Graph 工作流",
+      "item": [
+        {
+          "name": "Graph 执行 - 简单工作流",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"分析人工智能的发展趋势\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/graph/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "graph", "run"]
+            },
+            "description": "执行复杂的工作流"
+          },
+          "response": []
+        },
+        {
+          "name": "Graph 执行 - 条件分支",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"今天天气好吗？如果好就推荐户外活动，否则推荐室内活动\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/graph/run",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "graph", "run"]
+            },
+            "description": "带条件判断的工作流"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "多模态",
+      "item": [
+        {
+          "name": "图像理解 - URL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"这张图片里有什么？\",\n  \"image_url\": \"https://cloudwego.cn/img/eino/edge_type_validate.png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/multimodal/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "multimodal", "chat"]
+            },
+            "description": "使用图像 URL 进行多模态对话"
+          },
+          "response": []
+        },
+        {
+          "name": "图像理解 - Base64",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"描述这张图片\",\n  \"image_b64\": \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\",\n  \"mime_type\": \"image/png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/multimodal/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "multimodal", "chat"]
+            },
+            "description": "使用 Base64 编码的图像"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "测试场景",
+      "item": [
+        {
+          "name": "完整 RAG 流程",
+          "item": [
+            {
+              "name": "1. 清空旧数据",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/rag/clear",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "rag", "clear"]
+                }
+              }
+            },
+            {
+              "name": "2. 索引新文档",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"documents\": [\n    \"EinoFlow 是一个基于字节跳动 Eino 框架的 AI 应用平台\",\n    \"EinoFlow 支持 LLM、RAG、Agent、Chain 等核心功能\",\n    \"EinoFlow 使用 Go 语言开发，前端使用 React\",\n    \"EinoFlow 支持豆包、OpenAI、Anthropic 等多个模型提供商\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/rag/index",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "rag", "index"]
+                }
+              }
+            },
+            {
+              "name": "3. 查询文档",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"EinoFlow 支持哪些功能？\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/rag/query",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "rag", "query"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "上下文窗口测试",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"doubao-seed-1-6-lite-251015\",\n  \"messages\": [\n    {\"role\": \"system\", \"content\": \"你是助手\"},\n    {\"role\": \"user\", \"content\": \"第1个问题\"},\n    {\"role\": \"assistant\", \"content\": \"回答1\"},\n    {\"role\": \"user\", \"content\": \"第2个问题\"},\n    {\"role\": \"assistant\", \"content\": \"回答2\"},\n    {\"role\": \"user\", \"content\": \"第3个问题\"},\n    {\"role\": \"assistant\", \"content\": \"回答3\"},\n    {\"role\": \"user\", \"content\": \"第4个问题\"},\n    {\"role\": \"assistant\", \"content\": \"回答4\"},\n    {\"role\": \"user\", \"content\": \"第5个问题\"},\n    {\"role\": \"assistant\", \"content\": \"回答5\"},\n    {\"role\": \"user\", \"content\": \"总结前面所有问题\"}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/llm/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "llm", "chat"]
+            },
+            "description": "测试上下文窗口自动截断功能"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
