@@ -1,0 +1,466 @@
+{
+	"info": {
+		"_postman_id": "gin-learning-collection",
+		"name": "Gin Framework Learning API Collection",
+		"description": "完整的Gin框架学习项目API文档，包含所有模块的接口示例",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01-QuickStart",
+			"item": [
+				{
+					"name": "Hello World",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								""
+							]
+						},
+						"description": "基础的Hello World示例"
+					},
+					"response": []
+				}
+			],
+			"description": "Gin快速入门示例"
+		},
+		{
+			"name": "02-Compare",
+			"item": [
+				{
+					"name": "Index Handler",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/index",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"index"
+							]
+						},
+						"description": "返回简单的字符串响应"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/get",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"get"
+							]
+						},
+						"description": "GET请求返回JSON格式的标准响应"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"张三\",\n    \"age\": 25,\n    \"city\": \"北京\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"post"
+							]
+						},
+						"description": "POST请求接收JSON数据并返回"
+					},
+					"response": []
+				}
+			],
+			"description": "Gin与原生net/http对比示例"
+		},
+		{
+			"name": "03-Router",
+			"item": [
+				{
+					"name": "User Login (Form)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"login"
+							]
+						},
+						"description": "用户登录接口，使用form-data形式提交"
+					},
+					"response": []
+				}
+			],
+			"description": "路由定义和POST请求处理"
+		},
+		{
+			"name": "04-Request",
+			"item": [
+				{
+					"name": "Query Parameters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/query?name=张三&id=1001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"query"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "张三",
+									"description": "用户名称"
+								},
+								{
+									"key": "id",
+									"value": "1001",
+									"description": "用户ID（必填）"
+								}
+							]
+						},
+						"description": "演示Query参数的多种获取方式：Query、DefaultQuery、GetQuery"
+					},
+					"response": []
+				},
+				{
+					"name": "Query with Default",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/query?id=1001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"query"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1001",
+									"description": "用户ID"
+								}
+							]
+						},
+						"description": "不传name参数时会使用默认值 'shanyangsuanfa'"
+					},
+					"response": []
+				}
+			],
+			"description": "请求参数获取示例"
+		},
+		{
+			"name": "05-Model",
+			"item": [
+				{
+					"name": "Posts Index Page",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/posts/index",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts",
+								"index"
+							]
+						},
+						"description": "渲染posts/index.tmpl模板页面"
+					},
+					"response": []
+				},
+				{
+					"name": "Users Index Page",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/index",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"index"
+							]
+						},
+						"description": "渲染users/index.tmpl模板页面"
+					},
+					"response": []
+				}
+			],
+			"description": "HTML模板渲染示例"
+		},
+		{
+			"name": "06-Bind",
+			"item": [
+				{
+					"name": "Login (JSON Bind)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:9090/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"login"
+							]
+						},
+						"description": "JSON格式的登录请求，演示ShouldBind用法（注意端口9090）"
+					},
+					"response": []
+				},
+				{
+					"name": "Nested Struct B",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getb?field_a=valueA&field_b=valueB",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"getb"
+							],
+							"query": [
+								{
+									"key": "field_a",
+									"value": "valueA",
+									"description": "嵌套结构体字段"
+								},
+								{
+									"key": "field_b",
+									"value": "valueB",
+									"description": "主结构体字段"
+								}
+							]
+						},
+						"description": "演示嵌套结构体的参数绑定"
+					},
+					"response": []
+				},
+				{
+					"name": "Nested Struct C (Pointer)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getc?field_a=valueA&field_c=valueC",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"getc"
+							],
+							"query": [
+								{
+									"key": "field_a",
+									"value": "valueA",
+									"description": "嵌套结构体指针字段"
+								},
+								{
+									"key": "field_c",
+									"value": "valueC",
+									"description": "主结构体字段"
+								}
+							]
+						},
+						"description": "演示包含结构体指针的参数绑定"
+					},
+					"response": []
+				},
+				{
+					"name": "Anonymous Struct D",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getd?field_x=valueX&field_d=valueD",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"getd"
+							],
+							"query": [
+								{
+									"key": "field_x",
+									"value": "valueX",
+									"description": "匿名结构体字段"
+								},
+								{
+									"key": "field_d",
+									"value": "valueD",
+									"description": "主结构体字段"
+								}
+							]
+						},
+						"description": "演示匿名结构体的参数绑定"
+					},
+					"response": []
+				}
+			],
+			"description": "数据绑定示例，包含JSON绑定和结构体绑定"
+		},
+		{
+			"name": "07-Middleware",
+			"item": [
+				{
+					"name": "Ping (With Latency Monitor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/ping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ping"
+							]
+						},
+						"description": "带延迟监控中间件的Ping接口，会在服务端日志中输出请求耗时"
+					},
+					"response": []
+				}
+			],
+			"description": "中间件示例，演示请求延迟监控功能"
+		},
+		{
+			"name": "08-Sessions",
+			"item": [
+				{
+					"name": "Session Login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"login"
+							]
+						},
+						"description": "Session登录示例，使用Redis存储session"
+					},
+					"response": []
+				}
+			],
+			"description": "Session管理示例，使用Redis存储"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "bind_port",
+			"value": "http://localhost:9090",
+			"type": "string"
+		}
+	]
+}

@@ -24,3 +24,17 @@ func LatencyMonitor() gin.HandlerFunc {
 		log.Printf("[Metrics] | %d | %13v | %s", status, latency, path)
 	}
 }
+
+func main() {
+	r := gin.New()
+	r.Use(LatencyMonitor())
+
+	r.GET("/ping", func(c *gin.Context) {
+		time.Sleep(100 * time.Millisecond) // 模拟处理时间
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	r.Run(":8080")
+}
