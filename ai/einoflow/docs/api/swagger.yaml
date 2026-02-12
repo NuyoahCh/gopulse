@@ -1,0 +1,99 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: 基于 Eino 的 AI 应用平台 API 文档
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: EinoFlow API
+  version: "1.0"
+paths:
+  /llm/chat:
+    post:
+      consumes:
+      - application/json
+      description: 与 LLM 进行对话，支持多个模型提供商
+      parameters:
+      - description: '聊天请求 {model: string, messages: array}'
+        in: body
+        name: request
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 聊天响应
+          schema:
+            type: object
+        "400":
+          description: 请求格式错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: LLM 聊天接口
+      tags:
+      - LLM
+  /llm/chat/stream:
+    post:
+      consumes:
+      - application/json
+      description: 与 LLM 进行流式对话，实时返回响应
+      parameters:
+      - description: '聊天请求 {model: string, messages: array}'
+        in: body
+        name: request
+        required: true
+        schema:
+          type: object
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE 流式响应
+          schema:
+            type: string
+        "400":
+          description: 请求格式错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: LLM 流式聊天接口
+      tags:
+      - LLM
+  /llm/models:
+    get:
+      description: 获取所有已配置的 LLM 模型列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 模型列表
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取可用模型列表
+      tags:
+      - LLM
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

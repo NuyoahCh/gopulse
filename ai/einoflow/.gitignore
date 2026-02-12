@@ -1,0 +1,119 @@
+# ========================================
+# 敏感信息和密钥文件
+# ========================================
+# 环境变量文件（包含 API Keys）
+.env
+.env.local
+.env.*.local
+
+# ========================================
+# Go 相关
+# ========================================
+# 编译产物
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go 工作区文件
+go.work
+go.work.sum
+
+# 依赖缓存
+vendor/
+
+# IDE 和编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ========================================
+# Node.js / 前端相关
+# ========================================
+# 依赖目录（非常大，不应上传）
+web/node_modules/
+node_modules/
+
+# 前端构建产物
+web/dist/
+web/build/
+web/.next/
+web/out/
+
+# 前端环境变量
+web/.env
+web/.env.local
+web/.env.*.local
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 包管理器锁文件（可选，根据团队决定）
+# web/package-lock.json
+# web/yarn.lock
+# web/pnpm-lock.yaml
+
+# ========================================
+# 数据和日志
+# ========================================
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+
+# 日志文件
+logs/
+*.log
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# ========================================
+# 测试和覆盖率
+# ========================================
+coverage/
+*.cover
+*.coverage
+.coverage.*
+
+# ========================================
+# 操作系统
+# ========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ========================================
+# 其他
+# ========================================
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar

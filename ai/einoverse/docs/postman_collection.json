@@ -1,0 +1,214 @@
+{
+	"info": {
+		"name": "EinoVerse API",
+		"description": "企业员工内部知识库和请假申请审批系统API文档",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "einoverse-api"
+	},
+	"item": [
+		{
+			"name": "健康检查",
+			"item": [
+				{
+					"name": "健康检查",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "检查服务是否正常运行"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "知识库管理",
+			"item": [
+				{
+					"name": "创建文档",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"员工手册\",\n    \"content\": \"这是员工手册的内容，包含公司规章制度、福利待遇等信息。\\n\\n1. 工作时间：周一至周五 9:00-18:00\\n2. 请假制度：需要提前申请，经主管批准后方可生效。\\n3. 年假政策：入职满一年后可享受5天年假。\",\n    \"tags\": [\"员工手册\", \"规章制度\"],\n    \"author\": \"HR部门\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/knowledgebase/documents",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "knowledgebase", "documents"]
+						},
+						"description": "创建新的知识库文档"
+					},
+					"response": []
+				},
+				{
+					"name": "获取文档",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/knowledgebase/documents/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "knowledgebase", "documents", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "文档ID"
+								}
+							]
+						},
+						"description": "根据ID获取文档详情"
+					},
+					"response": []
+				},
+				{
+					"name": "搜索文档",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/knowledgebase/documents/search?q=请假&limit=5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "knowledgebase", "documents", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "请假",
+									"description": "搜索关键词"
+								},
+								{
+									"key": "limit",
+									"value": "5",
+									"description": "返回结果数量，默认5，最大100"
+								}
+							]
+						},
+						"description": "根据关键词搜索文档"
+					},
+					"response": []
+				},
+				{
+					"name": "问答",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"请问公司年假政策是什么？\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/knowledgebase/ask",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "knowledgebase", "ask"]
+						},
+						"description": "基于知识库内容进行智能问答，需要配置Eino API才能使用"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "请假管理",
+			"item": [
+				{
+					"name": "创建请假申请",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee_id\": \"E001\",\n    \"employee_name\": \"张三\",\n    \"supervisor\": \"李主管\",\n    \"text\": \"本周五因家中有事需要请假一天，工作已交接给同事王五处理，预计下周一返回工作岗位。\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/leave/applications",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leave", "applications"]
+						},
+						"description": "通过自然语言文本自动创建结构化请假申请，需要配置Eino API才能使用"
+					},
+					"response": []
+				},
+				{
+					"name": "获取请假申请",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/leave/applications/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leave", "applications", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "申请ID"
+								}
+							]
+						},
+						"description": "根据ID获取请假申请详情"
+					},
+					"response": []
+				},
+				{
+					"name": "审批请假申请",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"approver\": \"李主管\",\n    \"comments\": \"同意\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/leave/applications/:id/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leave", "applications", ":id", "approve"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "申请ID（从URL路径参数获取）"
+								}
+							]
+						},
+						"description": "对请假申请进行审批并获取AI建议，申请ID从URL路径参数获取。需要配置Eino API才能使用"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
+
